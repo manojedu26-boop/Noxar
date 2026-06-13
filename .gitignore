@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+jspm_packages/
+web_modules/
+
+# Python Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Build and Packaging directories
+dist/
+dist-app/
+out/
+build/
+bin/
+obj/
+src-tauri/target/
+
+# Local logs
+*.log
+stderr.log
+stdout.log
+
+# IDE files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Secrets/Config
+.env

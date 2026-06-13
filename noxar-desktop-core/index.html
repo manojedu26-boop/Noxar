@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Noxar Core</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/index.css">
+</head>
+<body class="bg-transparent text-white h-screen w-screen flex flex-col p-3 m-0 overflow-hidden">
+  <!-- Centered web application card resembling the extension size but optimized for web-views -->
+  <div id="main-card" class="w-full max-w-[420px] flex-1 rounded-xl flex flex-col p-3 gap-3 glass-panel overflow-hidden">
+    <header class="w-full flex justify-between items-center pb-1 select-none" style="-webkit-app-region: drag;">
+      <div class="w-5"></div>
+      <span class="text-white font-medium text-sm tracking-wider lowercase font-sans">noxar</span>
+      <button id="btn-minimize" class="w-5 h-5 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/30 transition duration-150 font-semibold text-[10px]" style="-webkit-app-region: no-drag;">✕</button>
+    </header>
+
+    <!-- Perplexity styled search box -->
+    <div class="perplexity-card rounded-xl flex flex-col p-3 transition-colors glass-card">
+      <textarea id="problem-input" class="w-full h-[90px] border-none outline-none resize-none text-[13px] leading-relaxed bg-transparent text-gray-100 placeholder-gray-500" placeholder="Ask anything, or paste a problem statement to analyze..."></textarea>
+      <div class="card-footer flex justify-between items-center mt-1.5">
+        <div class="model-select-container">
+          <select id="model-select" class="border-none bg-transparent text-white text-xs outline-none cursor-pointer py-1" style="font-family: inherit;">
+            <option value="Fast" class="bg-black text-white">⚡ Fast</option>
+            <option value="Reasoning" class="bg-black text-white">🧠 Reasoning</option>
+          </select>
+        </div>
+        <div class="action-buttons flex gap-1.5 items-center">
+          <button class="pill-btn px-3 py-1 border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-[11px] font-medium text-gray-300 rounded-full cursor-pointer transition-all duration-150" id="btn-clear">Clear</button>
+          <button class="pill-btn primary px-3.5 py-1 bg-primary hover:bg-primary-hover border border-primary/50 text-white text-[11px] font-medium rounded-full cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 shadow-[0_0_12px_rgba(123,44,191,0.25)] hover:shadow-[0_0_18px_rgba(123,44,191,0.45)]" id="btn-diagnose" disabled>Analyze Problem</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loader Panel -->
+    <div class="loader-container hidden flex-col items-center justify-center py-6 gap-3 border border-white/10 rounded-xl bg-black" id="loader-panel">
+      <div class="premium-spinner"></div>
+      <div class="loader-text text-xs text-gray-400 font-medium">Analyzing computational bounds...</div>
+    </div>
+
+    <!-- Result Panel -->
+    <div class="result-container hidden border border-white/10 rounded-xl p-3 overflow-hidden flex-1 bg-black flex flex-col" id="result-panel">
+      <div class="result-header text-[10px] tracking-wider uppercase text-gray-400 font-bold border-b border-white/10 pb-1.5 mb-2 flex justify-between items-center">
+        <span>Diagnostic Audit</span>
+        <span class="badge bg-white/10 text-white px-2 py-0.5 rounded text-[9px] font-bold border border-white/15">noxar-core</span>
+      </div>
+      <div class="result-content text-[13px] leading-relaxed text-gray-100 overflow-y-auto flex-1" id="result-content"></div>
+    </div>
+  </div>
+
+  <!-- Docking Coin View -->
+  <div id="docking-coin" class="hidden fixed top-2 left-2 w-12 h-12 bg-black border border-white/20 rounded-full flex items-center justify-center cursor-pointer shadow-[0_0_12px_rgba(255,255,255,0.15)] transition duration-200 hover:scale-105 hover:border-white/40">
+    <img src="logo.png" class="w-7 h-7 object-contain select-none animate-pulse invert"/>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

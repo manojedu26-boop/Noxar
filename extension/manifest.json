@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "NOXAR Diagnostic Engine",
+  "version": "1.0.0",
+  "description": "Autonomous Diagnostic & Edge-Case Engine for competitive programmers.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ]
+}

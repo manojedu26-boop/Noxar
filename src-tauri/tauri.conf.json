@@ -1,0 +1,47 @@
+{
+  "package": {
+    "productName": "noxar",
+    "version": "1.0.0"
+  },
+  "build": {
+    "distDir": "../src",
+    "devPath": "http://localhost:5173",
+    "beforeDevCommand": "",
+    "beforeBuildCommand": ""
+  },
+  "tauri": {
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.noxar.desktop",
+      "icon": []
+    },
+    "allowlist": {
+      "all": false,
+      "clipboard": {
+        "all": true,
+        "readText": true
+      },
+      "globalShortcut": {
+        "all": true
+      }
+    },
+    "windows": [
+      {
+        "title": "NOXAR",
+        "label": "main",
+        "url": "index.html",
+        "fullscreen": false,
+        "width": 420,
+        "height": 600,
+        "resizable": false,
+        "alwaysOnTop": true,
+        "decorations": false,
+        "transparent": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  }
+}

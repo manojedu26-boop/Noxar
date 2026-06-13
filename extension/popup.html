@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOXAR Diagnostic Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #ffffff;
+      --bg-card: #ffffff;
+      --text-main: #1a1a1a;
+      --text-muted: #666666;
+      --border-color: #e5e7eb;
+      --primary-color: #7b2cbf; /* Vibrant Purple Accent */
+      --primary-hover: #6220a2;
+      --pill-bg: #f9fafb;
+      --pill-hover: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      width: 440px;
+      height: 550px;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #e5e7eb;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d1d5db;
+    }
+
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: 16px;
+    }
+
+    /* Top Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 4px;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-symbol {
+      width: 24px;
+      height: 24px;
+      background: var(--primary-color);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 13px;
+    }
+
+    h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      color: var(--text-main);
+    }
+
+    .version-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: #f3e8ff;
+      color: var(--primary-color);
+      border: 1px solid #e9d5ff;
+    }
+
+    /* Perplexity-style input box */
+    .perplexity-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 14px 10px 14px;
+      transition: border-color 0.2s;
+    }
+
+    .perplexity-card:focus-within {
+      border-color: var(--primary-color);
+    }
+
+    .perplexity-card textarea {
+      width: 100%;
+      height: 90px;
+      border: none;
+      resize: none;
+      font-family: inherit;
+      font-size: 13.5px;
+      color: var(--text-main);
+      outline: none;
+      line-height: 1.5;
+      background: transparent;
+    }
+
+    .perplexity-card textarea::placeholder {
+      color: #9ca3af;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .selection-status {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .selection-status .indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #d1d5db;
+      transition: background-color 0.2s;
+    }
+
+    .selection-status.active .indicator {
+      background: var(--primary-color);
+    }
+
+    /* Action Buttons in Footer */
+    .action-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .pill-btn {
+      background: var(--pill-bg);
+      border: 1px solid var(--border-color);
+      padding: 5px 12px;
+      border-radius: 16px;
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .pill-btn:hover:not(:disabled) {
+      background: var(--pill-hover);
+      color: #111827;
+      border-color: #d1d5db;
+    }
+
+    .pill-btn.primary {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .pill-btn.primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    .pill-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Loader */
+    .loader-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 0;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(123, 44, 191, 0.1);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .loader-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Result Panel */
+    .result-container {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .result-header {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .result-header .badge {
+      background: #f3e8ff;
+      color: var(--primary-color);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .result-content {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-main);
+    }
+
+    /* Markdown inside result */
+    .result-content h1, 
+    .result-content h2, 
+    .result-content h3 {
+      color: var(--text-main);
+      margin-top: 16px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .result-content h1 { font-size: 14.5px; border-bottom: 1px solid #f3f4f6; padding-bottom: 4px; }
+    .result-content h2 { font-size: 13.5px; }
+    .result-content h3 { font-size: 13px; }
+
+    .result-content p {
+      margin-bottom: 10px;
+    }
+
+    .result-content ul, 
+    .result-content ol {
+      margin-left: 18px;
+      margin-bottom: 12px;
+    }
+
+    .result-content li {
+      margin-bottom: 4px;
+    }
+
+    .result-content code {
+      font-family: 'Source Code Pro', monospace;
+      background: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--primary-color); /* Contrast code purple */
+    }
+
+    .result-content pre {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin-bottom: 12px;
+    }
+
+    .result-content pre code {
+      background: transparent;
+      padding: 0;
+      color: var(--text-main);
+      font-size: 12px;
+      font-family: 'Source Code Pro', monospace;
+    }
+
+    .result-content pre code[class*="language-"] {
+      border-left: 3px solid var(--primary-color);
+      padding-left: 10px;
+      display: block;
+    }
+
+    /* Light-themed streamed tables */
+    .result-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 12px;
+    }
+
+    .result-content th, 
+    .result-content td {
+      border: 1px solid #e5e7eb;
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .result-content th {
+      background: #f5f5f5;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-group">
+        <div class="logo-symbol">N</div>
+        <h1>NOXAR</h1>
+      </div>
+      <span class="version-tag">Edge diagnostic</span>
+    </header>
+
+    <!-- Perplexity styled search box -->
+    <div class="perplexity-card">
+      <textarea id="problem-input" placeholder="Ask anything, or highlight a problem statement on the page to analyze..."></textarea>
+      <div class="card-footer">
+        <div class="selection-status" id="selection-status-indicator">
+          <div class="indicator"></div>
+          <span id="selection-status-text">Waiting for page selection...</span>
+        </div>
+        <div class="action-buttons">
+          <button class="pill-btn" id="btn-clear">Clear</button>
+          <button class="pill-btn primary" id="btn-diagnose" disabled>Analyze Problem</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loader Panel -->
+    <div class="loader-container" id="loader-panel">
+      <div class="spinner"></div>
+      <div class="loader-text">Analyzing computational bounds...</div>
+    </div>
+
+    <!-- Result Panel -->
+    <div class="result-container" id="result-panel">
+      <div class="result-header">
+        <span>Diagnostic Audit</span>
+        <span class="badge">gemini-2.5</span>
+      </div>
+      <div class="result-content" id="result-content"></div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
