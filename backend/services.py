@@ -3,8 +3,8 @@ import re
 import logging
 from pathlib import Path
 from google.genai import types
-from config import settings
-from clients import client_pool
+from backend.config import settings
+from backend.clients import client_pool
 
 logger = logging.getLogger("noxar-backend.services")
 

@@ -1,7 +1,7 @@
 import logging
 from google import genai
 import openai
-from config import settings
+from backend.config import settings
 
 logger = logging.getLogger("noxar-backend.clients")
 

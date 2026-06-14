@@ -2,7 +2,7 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from routes import router
+from backend.routes import router
 
 logger = logging.getLogger("noxar-backend.main")
 

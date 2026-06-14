@@ -3,7 +3,7 @@ import asyncio
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from services import DiagnosticsService
+from backend.services import DiagnosticsService
 
 router = APIRouter()
 
