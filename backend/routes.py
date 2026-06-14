@@ -19,9 +19,6 @@ class ProblemPayload(BaseModel):
 
 @router.post("/diagnose")
 async def diagnose(request: DiagnoseRequest):
-    # Inject randomized delay to simulate natural human reading/clipboard delays
-    await asyncio.sleep(random.uniform(1.5, 3.2))
-    
     return StreamingResponse(
         DiagnosticsService.generate_diagnostics_stream(
             problem_text=request.problem_text,
@@ -33,9 +30,6 @@ async def diagnose(request: DiagnoseRequest):
 
 @router.post("/api/analyze")
 async def api_analyze(payload: ProblemPayload):
-    # Inject randomized delay to simulate natural human reading/clipboard delays
-    await asyncio.sleep(random.uniform(1.5, 3.2))
-    
     return StreamingResponse(
         DiagnosticsService.generate_diagnostics_stream(
             problem_text=payload.text,
