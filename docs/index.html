@@ -190,56 +190,8 @@
         </div>
 
         <!-- Editor View Mockup -->
-        <div class="flex flex-col md:flex-row h-[280px] bg-slate-950 text-left font-mono text-xs overflow-hidden rounded-b-lg">
-          
-          <!-- Code Block (Left Side) -->
-          <div class="flex-1 p-4 border-r border-slate-900 overflow-y-auto text-slate-400">
-            <span class="text-blue-400">#include</span> <span class="text-emerald-400">&lt;iostream&gt;</span><br>
-            <span class="text-blue-400">using namespace</span> std;<br><br>
-            <span class="text-teal-400">int</span> <span class="text-amber-400">maxSubArray</span>(<span class="text-teal-400">vector</span>&lt;<span class="text-teal-400">int</span>&gt;& nums) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-teal-400">int</span> max_so_far = INT_MIN, max_ending_here = <span class="text-purple-400">0</span>;<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">for</span> (<span class="text-teal-400">int</span> x : nums) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max_ending_here += x;<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">if</span> (max_so_far < max_ending_here)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max_so_far = max_ending_here;<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">if</span> (max_ending_here < <span class="text-purple-400">0</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max_ending_here = <span class="text-purple-400">0</span>;<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">return</span> max_so_far;<br>
-            }
-          </div>
-
-          <!-- Noxar Floating Diagnostics Overlay (Right Side / Float) -->
-          <div class="w-full md:w-64 bg-slate-900 border-l border-slate-800 p-4 flex flex-col gap-3 relative shadow-inner">
-            
-            <!-- Noxar mini visual card -->
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-              <div class="flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                <span class="text-white font-bold text-xs lowercase font-sans">noxar</span>
-              </div>
-              <span class="text-[9px] bg-blue-900/60 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-sans font-bold">⚡ Fast</span>
-            </div>
-
-            <!-- Diagnostics content inside mockup -->
-            <div class="flex-1 flex flex-col gap-2 font-sans overflow-y-auto">
-              <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Complexity Audit</div>
-              
-              <!-- Metric rows -->
-              <div class="bg-slate-950 p-2 rounded border border-slate-800 text-[11px]">
-                <div class="text-slate-400 font-semibold mb-0.5">Big-O Bound:</div>
-                <div class="text-emerald-400 font-mono">O(N) Time | O(1) Space</div>
-              </div>
-
-              <div class="bg-slate-950 p-2 rounded border border-slate-800 text-[11px] flex-1">
-                <div class="text-slate-400 font-semibold mb-0.5">Devious Corner Cases:</div>
-                <div class="text-slate-300 text-[10px] leading-relaxed">
-                  - Empty vectors / <code class="font-mono text-purple-300 bg-slate-900 px-1 rounded">N=0</code><br>
-                  - All elements negative: <code class="font-mono text-purple-300 bg-slate-900 px-1 rounded">nums = [-3, -2, -5]</code>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="relative bg-slate-950 overflow-hidden rounded-b-lg aspect-[16/10] max-h-[380px] flex items-center justify-center">
+          <img src="leetcode_demo.webp" class="w-full h-full object-cover" alt="noxar in action demo">
         </div>
       </div>
     </main>
@@ -301,17 +253,8 @@
           </div>
 
           <!-- High-Fidelity Clipboard Capture Mockup -->
-          <div class="bg-slate-950/80 rounded-xl p-4 border border-white/10 backdrop-blur-sm text-left font-sans text-sm select-none">
-            <div class="flex items-center justify-between text-[11px] text-blue-300 border-b border-white/10 pb-2 mb-2.5">
-              <span class="flex items-center gap-1.5 font-semibold">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
-                Clipboard Listener
-              </span>
-              <span class="font-mono text-[10px] text-white/40">Copied text captured</span>
-            </div>
-            <div class="font-mono text-[11px] text-white/80 line-clamp-2 bg-black/30 p-2 rounded border border-white/5">
-              Given an array of integers nums and an integer target, return indices of the two numbers such that they add up...
-            </div>
+          <div class="bg-slate-950/80 rounded-xl overflow-hidden border border-white/10 shadow-inner h-[180px] relative">
+            <img src="leetcode_demo.webp" class="w-full h-full object-cover" alt="noxar clipboard listener demo">
           </div>
         </div>
 
@@ -329,24 +272,8 @@
           </div>
 
           <!-- High-Fidelity Diagnostics Card Mockup -->
-          <div class="bg-white rounded-xl p-4 border border-slate-200/60 shadow-md flex flex-col gap-2.5 text-left font-sans text-sm select-none">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span class="font-bold text-slate-800 text-[12px]">noxar assistant</span>
-              </div>
-              <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">Ctrl+Space</span>
-            </div>
-            <div class="flex flex-col gap-1.5 text-[12px] text-slate-600 font-mono">
-              <div class="flex justify-between border-b border-slate-100/50 pb-1">
-                <span>Time Complexity:</span>
-                <span class="text-indigo-600 font-semibold">O(N log N)</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Memory Bound:</span>
-                <span class="text-slate-700">O(N) auxiliary</span>
-              </div>
-            </div>
+          <div class="bg-slate-950/80 rounded-xl overflow-hidden border border-slate-200/60 shadow-inner h-[180px] relative">
+            <img src="demo.webp" class="w-full h-full object-cover" alt="noxar assistant diagnostics stream">
           </div>
         </div>
 
