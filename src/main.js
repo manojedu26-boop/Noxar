@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const modelSelect = document.getElementById('model-select');
 
 
+  // Initialize free tokens
+  if (window.localStorage.getItem('noxar_tokens_remaining') === null) {
+    window.localStorage.setItem('noxar_tokens_remaining', '15000');
+  }
+
   let scrapedCode = "";
 
   // Helper to update button state based on text presence
@@ -53,6 +58,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const textToAnalyze = problemInput.value.trim();
     if (!textToAnalyze) return;
 
+    // Paywall Token Limit Check
+    const tokensRemaining = parseInt(window.localStorage.getItem('noxar_tokens_remaining') || '0', 10);
+    if (tokensRemaining <= 0) {
+      const paywallModal = document.getElementById('paywall-modal');
+      if (paywallModal) {
+        paywallModal.style.display = 'flex';
+      }
+      return;
+    }
+
     // Loading State
     loaderPanel.style.display = 'flex';
     resultPanel.style.display = 'none';
@@ -93,11 +108,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const chunk = decoder.decode(value, { stream: true });
         streamText += chunk;
         
+        // Decrement local tokens
+        const currentTokens = parseInt(window.localStorage.getItem('noxar_tokens_remaining') || '0', 10);
+        const newTokens = Math.max(0, currentTokens - chunk.length);
+        window.localStorage.setItem('noxar_tokens_remaining', newTokens.toString());
+        
         // Parse and render HTML incrementally
         resultContent.innerHTML = parseMarkdown(streamText);
         
         // Auto-scroll the results container to follow the stream
         resultPanel.scrollTop = resultPanel.scrollHeight;
+
+        if (newTokens <= 0) {
+          await reader.cancel();
+          const paywallModal = document.getElementById('paywall-modal');
+          if (paywallModal) {
+            paywallModal.style.display = 'flex';
+          }
+          break;
+        }
       }
     } catch (error) {
       loaderPanel.style.display = 'none';

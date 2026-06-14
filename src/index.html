@@ -373,9 +373,61 @@
     .model-select-dropdown:hover {
       border-color: #4b5563;
     }
+    
+    /* Paywall Modal styling */
+    #paywall-modal {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 12, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 1000;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    #paywall-modal h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    #paywall-modal p {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    #paywall-modal .btn-unlock {
+      background: #ffffff;
+      color: #000000;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-size: 12.5px;
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+    #paywall-modal .btn-unlock:hover {
+      background: #e5e7eb;
+    }
   </style>
 </head>
 <body>
+  <!-- Paywall Modal overlay -->
+  <div id="paywall-modal">
+    <h2>Token Limit Exceeded</h2>
+    <p>Upgrade to noxar Pro for infinite deep reasoning streams.</p>
+    <a class="btn-unlock" href="https://buy.stripe.com/test_eVaeWx5G1g4J3pS7ss" target="_blank">Unlock Infinite Access ($9/mo)</a>
+  </div>
+
   <div class="container">
     <header>
       <div class="logo-group">
