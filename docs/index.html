@@ -80,6 +80,48 @@
     .faq-answer.open {
       max-height: 200px;
     }
+
+    /* Rotating gradient border styles */
+    @keyframes rotate-gradient {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .glowing-border-container {
+      position: relative;
+      background: #ffffff;
+      border-radius: 24px;
+      z-index: 1;
+      overflow: hidden;
+      padding: 1.5px; /* Border width */
+      display: flex;
+      flex-direction: column;
+    }
+    .glowing-border-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, transparent, #e2e8f0, transparent 25%, #cbd5e1, transparent 50%, #e2e8f0, transparent 75%, #94a3b8, transparent 100%);
+      animation: rotate-gradient 8s linear infinite;
+      z-index: -2;
+    }
+    /* A slightly faster, more vibrant blue/cyan glow for the Pro tier */
+    .glowing-border-container-pro::before {
+      background: conic-gradient(from 0deg, transparent, #3b82f6, transparent 25%, #60a5fa, transparent 50%, #93c5fd, transparent 75%, #2563eb, transparent 100%);
+      animation: rotate-gradient 6s linear infinite;
+    }
+    .glowing-border-inner {
+      background: #ffffff;
+      border-radius: 22.5px;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 2;
+    }
   </style>
 </head>
 <body class="selection:bg-blue-600 selection:text-white antialiased text-base">
@@ -489,80 +531,84 @@
       <!-- Pricing Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
         <!-- Free Tier Card -->
-        <div class="reveal bg-slate-50 border border-slate-200/60 rounded-3xl p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-200">
-          <div>
-            <div class="mb-6">
-              <span class="text-slate-500 font-semibold text-sm uppercase tracking-wider">Free Tier</span>
-              <div class="flex items-baseline gap-1 mt-2">
-                <span class="text-4xl font-bold font-sans text-slate-950">$0</span>
-                <span class="text-slate-500 text-sm">/forever</span>
+        <div class="reveal glowing-border-container shadow-sm hover:shadow-md transition duration-200">
+          <div class="glowing-border-inner p-8">
+            <div>
+              <div class="mb-6">
+                <span class="text-slate-500 font-semibold text-sm uppercase tracking-wider">Free Tier</span>
+                <div class="flex items-baseline gap-1 mt-2">
+                  <span class="text-4xl font-bold font-sans text-slate-950">$0</span>
+                  <span class="text-slate-500 text-sm">/forever</span>
+                </div>
               </div>
+              <p class="text-slate-600 text-sm mb-6 leading-relaxed">
+                Perfect for getting started. Runs diagnostics locally using your own configurations or baseline limits.
+              </p>
+              <ul class="flex flex-col gap-3.5 mb-8 text-sm text-slate-600">
+                <li class="flex items-center gap-2.5">
+                  <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  15,000 baseline tokens
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  Fast model access (Gemini 2.5 Flash)
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  Local API credentials support
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  Standard hotkey trigger daemon
+                </li>
+              </ul>
             </div>
-            <p class="text-slate-600 text-sm mb-6 leading-relaxed">
-              Perfect for getting started. Runs diagnostics locally using your own configurations or baseline limits.
-            </p>
-            <ul class="flex flex-col gap-3.5 mb-8 text-sm text-slate-600">
-              <li class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                15,000 baseline tokens
-              </li>
-              <li class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Fast model access (Gemini 2.5 Flash)
-              </li>
-              <li class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Local API credentials support
-              </li>
-              <li class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Standard hotkey trigger daemon
-              </li>
-            </ul>
+            <a href="https://github.com/manojedu26-boop/Noxar/releases" class="block text-center bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold py-3.5 rounded-full text-sm transition">
+              Get Started
+            </a>
           </div>
-          <a href="https://github.com/manojedu26-boop/Noxar/releases" class="block text-center bg-slate-200 hover:bg-slate-300 text-slate-900 font-bold py-3.5 rounded-full text-sm transition">
-            Get Started
-          </a>
         </div>
 
         <!-- Pro Tier Card -->
-        <div class="reveal bg-slate-950 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between shadow-xl relative overflow-hidden ring-2 ring-blue-500">
-          <div class="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-bl-xl">
-            Popular
-          </div>
-          <div>
-            <div class="mb-6">
-              <span class="text-blue-400 font-semibold text-sm uppercase tracking-wider">noxar Pro</span>
-              <div class="flex items-baseline gap-1 mt-2">
-                <span class="text-4xl font-bold font-sans text-white">$9</span>
-                <span class="text-slate-400 text-sm">/month</span>
-              </div>
+        <div class="reveal glowing-border-container glowing-border-container-pro shadow-xl transition duration-200">
+          <div class="glowing-border-inner p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-bl-xl z-20">
+              Popular
             </div>
-            <p class="text-slate-400 text-sm mb-6 leading-relaxed">
-              For active programmers. Unlock full model capability and bypass all limits.
-            </p>
-            <ul class="flex flex-col gap-3.5 mb-8 text-sm text-slate-300">
-              <li class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                <strong>Infinite deep reasoning streams</strong>
-              </li>
-              <li class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                OpenAI o1-mini &amp; Claude 3.5 Sonnet access
-              </li>
-              <li class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Zero network delay de-synchronizer
-              </li>
-              <li class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Priority backend compute slots
-              </li>
-            </ul>
+            <div>
+              <div class="mb-6">
+                <span class="text-blue-600 font-semibold text-sm uppercase tracking-wider">noxar Pro</span>
+                <div class="flex items-baseline gap-1 mt-2">
+                  <span class="text-4xl font-bold font-sans text-slate-950">$9</span>
+                  <span class="text-slate-500 text-sm">/month</span>
+                </div>
+              </div>
+              <p class="text-slate-650 text-sm mb-6 leading-relaxed">
+                For active programmers. Unlock full model capability and bypass all limits.
+              </p>
+              <ul class="flex flex-col gap-3.5 mb-8 text-sm text-slate-700">
+                <li class="flex items-center gap-2.5">
+                  <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  <span><strong>Infinite deep reasoning streams</strong></span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  OpenAI o1-mini &amp; Claude 3.5 Sonnet access
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  Zero network delay de-synchronizer
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  Priority backend compute slots
+                </li>
+              </ul>
+            </div>
+            <a href="https://buy.stripe.com/test_eVaeWx5G1g4J3pS7ss" target="_blank" class="block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-full text-sm transition shadow-lg shadow-blue-500/20">
+              Unlock Infinite Access
+            </a>
           </div>
-          <a href="https://buy.stripe.com/test_eVaeWx5G1g4J3pS7ss" target="_blank" class="block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-full text-sm transition shadow-lg shadow-blue-500/20">
-            Unlock Infinite Access
-          </a>
         </div>
       </div>
     </div>
