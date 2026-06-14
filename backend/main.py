@@ -93,26 +93,39 @@ except Exception as e:
 
 @app.post("/diagnose")
 async def diagnose(request: DiagnoseRequest):
-    if not request.problem_text.strip():
+    cleaned_text = request.problem_text.strip()
+    if not cleaned_text:
         raise HTTPException(status_code=400, detail="Problem text cannot be empty.")
     
     # Inject randomized delay to simulate natural human reading/clipboard delays
     await asyncio.sleep(random.uniform(1.5, 3.2))
     
-    # Reload instructions dynamically to capture updates
-    system_instruction = load_skill_instructions()
+    # Detect if the query is a simple math calculation or a very short general question
+    import re
+    is_math = bool(re.match(r'^[\d\s\+\-\*\/\(\)\%\.\^\=\?]+$', cleaned_text))
+    is_simple_question = len(cleaned_text) < 60 and not any(w in cleaned_text.lower() for w in ["array", "string", "matrix", "tree", "graph", "complexity", "algorithm", "solution", "leetcode", "codeforces"])
     
-    # Add anti-detection prompt variation rule
-    system_instruction += (
-        "\n\nCRITICAL ANTI-DETECTION RULE: Vary your phrasing, vocabulary, and explanation structure "
-        "across responses. Avoid repetitive boilerplate sentence patterns, identical transition words, "
-        "or static signatures. Express mathematical insights and algorithmic reductions using diverse, "
-        "natural language to simulate genuine human reasoning."
-    )
+    if is_math or is_simple_question:
+        system_instruction = (
+            "You are a helpful assistant. Provide the direct answer to the user's query as simply, "
+            "directly, and concisely as possible. Do not output any markdown headers, templates, "
+            "or filler prose. Just output the direct result (e.g. for math, just output the number)."
+        )
+    else:
+        # Reload instructions dynamically to capture updates
+        system_instruction = load_skill_instructions()
+        
+        # Add anti-detection prompt variation rule
+        system_instruction += (
+            "\n\nCRITICAL ANTI-DETECTION RULE: Vary your phrasing, vocabulary, and explanation structure "
+            "across responses. Avoid repetitive boilerplate sentence patterns, identical transition words, "
+            "or static signatures. Express mathematical insights and algorithmic reductions using diverse, "
+            "natural language to simulate genuine human reasoning."
+        )
     
-    contents = request.problem_text
+    contents = cleaned_text
     if request.code.strip():
-        contents = f"PROBLEM STATEMENT:\n{request.problem_text}\n\nUSER CODE:\n{request.code}"
+        contents = f"PROBLEM STATEMENT:\n{cleaned_text}\n\nUSER CODE:\n{request.code}"
         system_instruction += (
             "\n\nAdditionally, the user has provided their current code solution. "
             "Evaluate this code against the problem. Incorporate your findings in the response. "

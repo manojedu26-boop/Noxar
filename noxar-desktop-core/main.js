@@ -71,6 +71,24 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // Create desktop shortcut if it doesn't exist
+  try {
+    const { shell } = require('electron');
+    const fs = require('fs');
+    const desktopPath = app.getPath('desktop');
+    const shortcutPath = path.join(desktopPath, 'noxar.lnk');
+    if (!fs.existsSync(shortcutPath)) {
+      shell.writeShortcutLink(shortcutPath, 'create', {
+        target: app.getPath('exe'),
+        description: 'Launch noxar Diagnostic Assistant',
+        workingDirectory: path.dirname(app.getPath('exe'))
+      });
+      console.log('Desktop shortcut created successfully.');
+    }
+  } catch (err) {
+    console.error('Failed to create desktop shortcut:', err);
+  }
+
   createWindow();
 
   const handleShortcutTrigger = () => {
