@@ -34,6 +34,13 @@
       "icon": "logo.png",
       "publish": null
     },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "noxar"
+    },
     "directories": {
       "output": "dist-app"
     },

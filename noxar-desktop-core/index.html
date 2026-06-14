@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-screen w-screen overflow-hidden">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,12 +42,12 @@
     </div>
 
     <!-- Result Panel -->
-    <div class="result-container hidden border border-white/10 rounded-xl p-3 overflow-hidden flex-1 bg-black flex flex-col" id="result-panel">
+    <div class="result-container hidden border border-white/10 rounded-xl p-3 overflow-hidden flex-1 min-h-0 bg-black flex flex-col" id="result-panel">
       <div class="result-header text-[10px] tracking-wider uppercase text-gray-400 font-bold border-b border-white/10 pb-1.5 mb-2 flex justify-between items-center">
         <span>Diagnostic Audit</span>
         <span class="badge bg-white/10 text-white px-2 py-0.5 rounded text-[9px] font-bold border border-white/15">noxar-core</span>
       </div>
-      <div class="result-content text-[13px] leading-relaxed text-gray-100 overflow-y-auto flex-1" id="result-content"></div>
+      <div class="result-content text-[13px] leading-relaxed text-gray-100 overflow-y-auto flex-1 min-h-0" id="result-content"></div>
     </div>
   </div>
 

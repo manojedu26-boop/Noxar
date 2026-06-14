@@ -10,6 +10,54 @@ if (!gotTheLock) {
 
 let mainWindow;
 let isCoinState = false;
+let backendProcess = null;
+
+function startBackendServer() {
+  const { spawn } = require('child_process');
+  const fs = require('fs');
+
+  let pythonPath = "";
+  let workingDir = "";
+  let args = [];
+
+  if (app.isPackaged) {
+    const rootPath = path.join(app.getAppPath(), '..', '..');
+    const altRootPath = path.join(path.dirname(app.getPath('exe')), '..', '..');
+    
+    let resolvedRoot = rootPath;
+    if (!fs.existsSync(path.join(resolvedRoot, 'venv'))) {
+      resolvedRoot = altRootPath;
+    }
+
+    pythonPath = path.join(resolvedRoot, 'venv', 'Scripts', 'python.exe');
+    workingDir = resolvedRoot;
+    args = ['-m', 'uvicorn', 'main:app', '--port', '8000'];
+  } else {
+    pythonPath = path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe');
+    workingDir = path.join(__dirname, '..');
+    args = ['-m', 'uvicorn', 'main:app', '--port', '8000'];
+  }
+
+  if (!fs.existsSync(pythonPath)) {
+    pythonPath = 'python';
+  }
+
+  console.log(`[BACKEND] Spawning backend process: ${pythonPath} in ${workingDir}`);
+  try {
+    backendProcess = spawn(pythonPath, args, {
+      cwd: workingDir,
+      detached: false,
+      stdio: 'ignore',
+      shell: true
+    });
+
+    backendProcess.on('error', (err) => {
+      console.error('[BACKEND] Error starting process:', err);
+    });
+  } catch (e) {
+    console.error('[BACKEND] Exception starting process:', e);
+  }
+}
 
 app.on('second-instance', (event, commandLine, workingDirectory) => {
   if (mainWindow) {
@@ -71,22 +119,27 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  // Create desktop shortcut if it doesn't exist
-  try {
-    const { shell } = require('electron');
-    const fs = require('fs');
-    const desktopPath = app.getPath('desktop');
-    const shortcutPath = path.join(desktopPath, 'noxar.lnk');
-    if (!fs.existsSync(shortcutPath)) {
-      shell.writeShortcutLink(shortcutPath, 'create', {
-        target: app.getPath('exe'),
-        description: 'Launch noxar Diagnostic Assistant',
-        workingDirectory: path.dirname(app.getPath('exe'))
-      });
-      console.log('Desktop shortcut created successfully.');
+  // Start the Python backend server automatically
+  startBackendServer();
+
+  // Create desktop shortcut if it doesn't exist (production only)
+  if (app.isPackaged) {
+    try {
+      const { shell } = require('electron');
+      const fs = require('fs');
+      const desktopPath = app.getPath('desktop');
+      const shortcutPath = path.join(desktopPath, 'noxar.lnk');
+      if (!fs.existsSync(shortcutPath)) {
+        shell.writeShortcutLink(shortcutPath, 'create', {
+          target: app.getPath('exe'),
+          description: 'Launch noxar Diagnostic Assistant',
+          workingDirectory: path.dirname(app.getPath('exe'))
+        });
+        console.log('Desktop shortcut created successfully.');
+      }
+    } catch (err) {
+      console.error('Failed to create desktop shortcut:', err);
     }
-  } catch (err) {
-    console.error('Failed to create desktop shortcut:', err);
   }
 
   createWindow();
@@ -203,6 +256,16 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
+  // Kill the backend process tree on exit
+  if (backendProcess) {
+    try {
+      const { exec } = require('child_process');
+      exec(`taskkill /pid ${backendProcess.pid} /T /F`);
+    } catch (e) {
+      backendProcess.kill();
+    }
+  }
+
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -215,6 +278,16 @@ app.on('activate', () => {
 });
 
 app.on('will-quit', () => {
+  // Kill backend process if still running
+  if (backendProcess) {
+    try {
+      const { exec } = require('child_process');
+      exec(`taskkill /pid ${backendProcess.pid} /T /F`);
+    } catch (e) {
+      backendProcess.kill();
+    }
+  }
+
   // Clean up global shortcuts
   globalShortcut.unregisterAll();
 });

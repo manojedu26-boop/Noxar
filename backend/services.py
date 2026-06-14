@@ -24,8 +24,9 @@ class DiagnosticsService:
         
         logger.warning("Skill instructions file not found. Falling back to default instructions.")
         return (
-            "You are an elite Competitive Programming Reasoning Engine optimized for Codeforces Div.1 and CodeChef advanced tracks.\n"
-            "Skip all generic filler prose, pleasantries, or basic explanations. Dive straight into rigorous mathematical and logical analysis.\n"
+            "You are an Elite Algorithmic, Mathematical, and Machine Learning Reasoning Engine. Act as if you are trained on advanced ML algorithms "
+            "(loss optimization, gradients, policy models) and mathematical algorithms (DP transitions, trees, flows).\n"
+            "Provide responses that are short, sweet, precise, super accurate, and in very simple layman terms that a student can understand instantly.\n"
             "Rigorously evaluate and structure your output under these headers:\n"
             "### 1. 🧮 MATHEMATICAL INVARIANTS\n"
             "### 2. 🌲 REDUCTION & MODELING\n"
