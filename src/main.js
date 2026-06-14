@@ -76,15 +76,18 @@ document.addEventListener('DOMContentLoaded', () => {
     btnClear.disabled = true;
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/diagnose', {
+      const selectEl = document.querySelector('select');
+      const modelValue = selectEl ? selectEl.value : 'Fast';
+
+      const response = await fetch('http://127.0.0.1:8000/api/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-          problem_text: textToAnalyze,
+          text: textToAnalyze,
           code: scrapedCode,
-          selectedModel: modelSelect ? modelSelect.value : 'Fast'
+          selectedModel: modelValue
         })
       });
 
@@ -100,33 +103,53 @@ document.addEventListener('DOMContentLoaded', () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
       let streamText = "";
+      let buffer = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        streamText += chunk;
-        
-        // Decrement local tokens
-        const currentTokens = parseInt(window.localStorage.getItem('noxar_tokens_remaining') || '0', 10);
-        const newTokens = Math.max(0, currentTokens - chunk.length);
-        window.localStorage.setItem('noxar_tokens_remaining', newTokens.toString());
-        
-        // Parse and render HTML incrementally
-        resultContent.innerHTML = parseMarkdown(streamText);
-        
-        // Auto-scroll the results container to follow the stream
-        resultPanel.scrollTop = resultPanel.scrollHeight;
+        buffer += chunk;
 
-        if (newTokens <= 0) {
-          await reader.cancel();
-          const paywallModal = document.getElementById('paywall-modal');
-          if (paywallModal) {
-            paywallModal.style.display = 'flex';
+        let lines = buffer.split("\n");
+        buffer = lines.pop(); // Keep last partial line
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith("data: ")) {
+            const dataContent = trimmed.substring(6);
+            streamText += dataContent;
+
+            // Decrement local tokens
+            const currentTokens = parseInt(window.localStorage.getItem('noxar_tokens_remaining') || '0', 10);
+            const newTokens = Math.max(0, currentTokens - dataContent.length);
+            window.localStorage.setItem('noxar_tokens_remaining', newTokens.toString());
+            
+            // Parse and render HTML incrementally
+            resultContent.innerHTML = parseMarkdown(streamText);
+            
+            // Auto-scroll the results container to follow the stream
+            resultPanel.scrollTop = resultPanel.scrollHeight;
+
+            if (newTokens <= 0) {
+              await reader.cancel();
+              const paywallModal = document.getElementById('paywall-modal');
+              if (paywallModal) {
+                paywallModal.style.display = 'flex';
+              }
+              break;
+            }
           }
-          break;
         }
+      }
+
+      // Process remaining buffer
+      if (buffer.trim().startsWith("data: ")) {
+        const dataContent = buffer.trim().substring(6);
+        streamText += dataContent;
+        resultContent.innerHTML = parseMarkdown(streamText);
+        resultPanel.scrollTop = resultPanel.scrollHeight;
       }
     } catch (error) {
       loaderPanel.style.display = 'none';

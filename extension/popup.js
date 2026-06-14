@@ -101,14 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
     btnClear.disabled = true;
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/diagnose', {
+      const selectEl = document.querySelector('select');
+      const modelValue = selectEl ? selectEl.value : 'Fast';
+
+      const response = await fetch('http://127.0.0.1:8000/api/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-          problem_text: textToAnalyze,
-          code: scrapedCode
+          text: textToAnalyze,
+          code: scrapedCode,
+          selectedModel: modelValue
         })
       });
 
@@ -124,18 +128,38 @@ document.addEventListener('DOMContentLoaded', () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
       let streamText = "";
+      let buffer = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        streamText += chunk;
-        
-        // Parse and render HTML incrementally
+        buffer += chunk;
+
+        let lines = buffer.split("\n");
+        buffer = lines.pop(); // Keep last partial line
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith("data: ")) {
+            const dataContent = trimmed.substring(6);
+            streamText += dataContent;
+            
+            // Parse and render HTML incrementally
+            resultContent.innerHTML = parseMarkdown(streamText);
+            
+            // Auto-scroll the popup container or result panel to the bottom to follow the stream
+            resultPanel.scrollTop = resultPanel.scrollHeight;
+          }
+        }
+      }
+
+      // Process remaining buffer
+      if (buffer.trim().startsWith("data: ")) {
+        const dataContent = buffer.trim().substring(6);
+        streamText += dataContent;
         resultContent.innerHTML = parseMarkdown(streamText);
-        
-        // Auto-scroll the popup container or result panel to the bottom to follow the stream
         resultPanel.scrollTop = resultPanel.scrollHeight;
       }
     } catch (error) {

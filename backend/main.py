@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+import openai
 from google import genai
 from google.genai import types
 from google.genai.errors import APIError
@@ -14,9 +15,10 @@ from dotenv import load_dotenv
 
 # Try importing openai and anthropic safely
 try:
-    from openai import OpenAI
+    from openai import OpenAI, AsyncOpenAI
 except ImportError:
     OpenAI = None
+    AsyncOpenAI = None
 
 try:
     from anthropic import Anthropic
@@ -83,6 +85,11 @@ def load_skill_instructions() -> str:
         "### 4. 🚨 DEVIOUS CORNER CASES"
     )
 
+class ProblemPayload(BaseModel):
+    text: str
+    code: str = ""
+    selectedModel: str = "Fast"
+
 # Initialize the GenAI client. It reads GEMINI_API_KEY environment variable.
 # We initialize it lazily inside the route or at startup.
 try:
@@ -137,48 +144,34 @@ async def diagnose(request: DiagnoseRequest):
             "4. Suggest minimal, specific corrections or optimizations to fix their code without providing the entire rewritten solution (keep it educational)."
         )
     
-    def stream_generator():
+    async def stream_generator():
         selected_model = request.selectedModel
         if selected_model == "Reasoning":
             openai_key = os.environ.get("OPENAI_API_KEY")
             anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
             
             if openai_key:
-                if OpenAI is None:
-                    yield "\n\n[Error: 'openai' package is not installed or failed to import.]"
+                if AsyncOpenAI is None:
+                    yield "data: [Error: 'openai' package is not installed or failed to import.]\n\n"
                     return
                 try:
-                    openai_client = OpenAI(api_key=openai_key)
-                    try:
-                        response_stream = openai_client.chat.completions.create(
-                            model="o1-mini",
-                            messages=[
-                                {"role": "system", "content": system_instruction},
-                                {"role": "user", "content": contents}
-                            ],
-                            stream=True
-                        )
-                        for chunk in response_stream:
-                            if chunk.choices and chunk.choices[0].delta.content:
-                                yield chunk.choices[0].delta.content
-                    except Exception as e_inner:
-                        # Fallback for systems that reject system messages or temperature for o1-mini
-                        combined_content = f"SYSTEM INSTRUCTIONS:\n{system_instruction}\n\nINPUT PROBLEM/CODE:\n{contents}"
-                        response_stream = openai_client.chat.completions.create(
-                            model="o1-mini",
-                            messages=[
-                                {"role": "user", "content": combined_content}
-                            ],
-                            stream=True
-                        )
-                        for chunk in response_stream:
-                            if chunk.choices and chunk.choices[0].delta.content:
-                                yield chunk.choices[0].delta.content
+                    async_openai_client = AsyncOpenAI(api_key=openai_key)
+                    response_stream = await async_openai_client.chat.completions.create(
+                        model="o3-mini",
+                        messages=[
+                            {"role": "developer", "content": system_instruction},
+                            {"role": "user", "content": contents}
+                        ],
+                        stream=True
+                    )
+                    async for chunk in response_stream:
+                        if chunk.choices and chunk.choices[0].delta.content:
+                            yield f"data: {chunk.choices[0].delta.content}\n\n"
                 except Exception as e:
-                    yield f"\n\n[OpenAI Streaming Error: {str(e)}]"
+                    yield f"data: [OpenAI Streaming Error: {str(e)}]\n\n"
             elif anthropic_key:
                 if Anthropic is None:
-                    yield "\n\n[Error: 'anthropic' package is not installed or failed to import.]"
+                    yield "data: [Error: 'anthropic' package is not installed or failed to import.]\n\n"
                     return
                 try:
                     anthropic_client = Anthropic(api_key=anthropic_key)
@@ -193,16 +186,13 @@ async def diagnose(request: DiagnoseRequest):
                     )
                     for event in response_stream:
                         if event.type == "content_block_delta" and event.delta.text:
-                            yield event.delta.text
+                            yield f"data: {event.delta.text}\n\n"
                 except Exception as e:
-                    yield f"\n\n[Anthropic Streaming Error: {str(e)}]"
+                    yield f"data: [Anthropic Streaming Error: {str(e)}]\n\n"
             else:
                 yield (
-                    "### 🚨 CONFIGURATION ERROR\n\n"
-                    "**Reasoning mode** requires either an **OpenAI** or **Anthropic** API key to be set.\n\n"
-                    "Please configure at least one of the following in your `backend/.env` or root `.env` file:\n"
-                    "- `OPENAI_API_KEY` (runs `o1-mini` reasoning model)\n"
-                    "- `ANTHROPIC_API_KEY` (runs `claude-3-5-sonnet` model)\n"
+                    "data: ### 🚨 CONFIGURATION ERROR\n\n"
+                    "Reasoning mode requires either an OpenAI or Anthropic API key to be set.\n\n"
                 )
         else: # "Fast" or other
             # Ensure client is initialized
@@ -211,7 +201,7 @@ async def diagnose(request: DiagnoseRequest):
                 try:
                     client = genai.Client()
                 except Exception as e:
-                    yield f"\n\n[Gemini Client Init Error: {str(e)}. Please set GEMINI_API_KEY env variable.]"
+                    yield f"data: [Gemini Client Init Error: {str(e)}]\n\n"
                     return
             try:
                 response_stream = client.models.generate_content_stream(
@@ -224,13 +214,20 @@ async def diagnose(request: DiagnoseRequest):
                 )
                 for chunk in response_stream:
                     if chunk.text:
-                        yield chunk.text
-            except APIError as e:
-                yield f"\n\n[Gemini API Error: {str(e)}]"
+                        yield f"data: {chunk.text}\n\n"
             except Exception as e:
-                yield f"\n\n[Internal Streaming Error: {str(e)}]"
+                yield f"data: [Gemini Error: {str(e)}]\n\n"
 
-    return StreamingResponse(stream_generator(), media_type="text/plain")
+    return StreamingResponse(stream_generator(), media_type="text/event-stream")
+
+@app.post("/api/analyze")
+async def api_analyze(payload: ProblemPayload):
+    req = DiagnoseRequest(
+        problem_text=payload.text,
+        code=payload.code,
+        selectedModel=payload.selectedModel
+    )
+    return await diagnose(req)
 
 @app.get("/health")
 async def health():
