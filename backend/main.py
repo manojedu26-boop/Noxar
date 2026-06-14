@@ -1,4 +1,7 @@
 import os
+import asyncio
+import time
+import random
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -93,8 +96,19 @@ async def diagnose(request: DiagnoseRequest):
     if not request.problem_text.strip():
         raise HTTPException(status_code=400, detail="Problem text cannot be empty.")
     
+    # Inject randomized delay to simulate natural human reading/clipboard delays
+    await asyncio.sleep(random.uniform(1.5, 3.2))
+    
     # Reload instructions dynamically to capture updates
     system_instruction = load_skill_instructions()
+    
+    # Add anti-detection prompt variation rule
+    system_instruction += (
+        "\n\nCRITICAL ANTI-DETECTION RULE: Vary your phrasing, vocabulary, and explanation structure "
+        "across responses. Avoid repetitive boilerplate sentence patterns, identical transition words, "
+        "or static signatures. Express mathematical insights and algorithmic reductions using diverse, "
+        "natural language to simulate genuine human reasoning."
+    )
     
     contents = request.problem_text
     if request.code.strip():
