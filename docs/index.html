@@ -122,6 +122,56 @@
       justify-content: space-between;
       z-index: 2;
     }
+    
+    /* Mockup Animations */
+    @keyframes hero-loading-fade {
+      0%, 25% { opacity: 1; visibility: visible; }
+      30%, 90% { opacity: 0; visibility: hidden; }
+      95%, 100% { opacity: 1; visibility: visible; }
+    }
+    @keyframes hero-content-fade {
+      0%, 25% { opacity: 0; transform: translateY(10px); }
+      35%, 90% { opacity: 1; transform: translateY(0); }
+      95%, 100% { opacity: 0; transform: translateY(10px); }
+    }
+    @keyframes code-highlight-loop {
+      0%, 15% { background-color: transparent; }
+      22%, 88% { background-color: rgba(59, 130, 246, 0.15); }
+      95%, 100% { background-color: transparent; }
+    }
+    @keyframes laser-scan {
+      0% { left: -10%; opacity: 0; }
+      15%, 85% { opacity: 1; }
+      100% { left: 110%; opacity: 0; }
+    }
+    @keyframes key-flash {
+      0%, 100% { background-color: rgba(243, 244, 246, 0.6); color: #374151; box-shadow: none; }
+      15%, 35% { background-color: #2563eb; color: #ffffff; box-shadow: 0 0 12px rgba(37,99,235,0.4); }
+      50% { background-color: rgba(243, 244, 246, 0.6); color: #374151; box-shadow: none; }
+    }
+    @keyframes diagnostic-slide {
+      0%, 35% { opacity: 0; transform: translateY(8px); }
+      45%, 95% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(8px); }
+    }
+    .animate-hero-loading {
+      animation: hero-loading-fade 8s ease-in-out infinite;
+    }
+    .animate-hero-content {
+      animation: hero-content-fade 8s ease-in-out infinite;
+    }
+    .animate-code-highlight {
+      animation: code-highlight-loop 8s ease-in-out infinite;
+    }
+    .animate-laser-scan {
+      animation: laser-scan 4s linear infinite;
+    }
+    .animate-key-flash {
+      animation: key-flash 8s ease-in-out infinite;
+    }
+    .animate-diagnostic-slide {
+      animation: diagnostic-slide 8s ease-in-out infinite;
+    }
   </style>
 </head>
 <body class="selection:bg-blue-600 selection:text-white antialiased text-base">
@@ -166,7 +216,7 @@
 
       <!-- Primary Action Download Button -->
       <div class="flex flex-col sm:flex-row items-center gap-4 justify-center mb-16 animate-fade-in-up delay-700">
-        <a href="https://github.com/manojedu26-boop/Noxar/releases/latest/download/noxar-Setup-1.0.0.exe" class="inline-flex items-center gap-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3.5 rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.3)] transition duration-200 text-[15px] group">
+        <a href="https://github.com/manojedu26-boop/Noxar/releases" class="inline-flex items-center gap-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3.5 rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.3)] transition duration-200 text-[15px] group">
           <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
             <path d="M0 3.449L9.75 2.1v9.45H0V3.449zM0 12.45h9.75v9.45L0 20.551v-8.102zM10.95 1.95L24 0v11.55H10.95V1.95zm0 10.5H24v11.55l-13.05-1.95V12.45z"/>
           </svg>
@@ -190,8 +240,64 @@
         </div>
 
         <!-- Editor View Mockup -->
-        <div class="relative bg-slate-950 overflow-hidden rounded-b-lg aspect-[16/10] max-h-[380px] flex items-center justify-center">
-          <img src="leetcode_demo.webp" class="w-full h-full object-cover" alt="noxar in action demo">
+        <div class="flex flex-col md:flex-row h-[280px] bg-slate-950 text-left font-mono text-xs overflow-hidden rounded-b-lg">
+          
+          <!-- Code Block (Left Side) -->
+          <div class="flex-1 p-4 border-r border-slate-900 overflow-y-auto text-slate-400">
+            <span class="text-blue-400">#include</span> <span class="text-emerald-400">&lt;iostream&gt;</span><br>
+            <span class="text-blue-400">using namespace</span> std;<br><br>
+            <span class="text-teal-400">int</span> <span class="text-amber-400">maxSubArray</span>(<span class="text-teal-400">vector</span>&lt;<span class="text-teal-400">int</span>&gt;& nums) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-teal-400">int</span> max_so_far = INT_MIN, max_ending_here = <span class="text-purple-400">0</span>;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">for</span> (<span class="text-teal-400">int</span> x : nums) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max_ending_here += x;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="animate-code-highlight block px-1 rounded transition duration-200"><span class="text-blue-400">if</span> (max_so_far < max_ending_here)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max_so_far = max_ending_here;</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">if</span> (max_ending_here < <span class="text-purple-400">0</span>)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max_ending_here = <span class="text-purple-400">0</span>;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">return</span> max_so_far;<br>
+            }
+          </div>
+
+          <!-- Noxar Floating Diagnostics Overlay (Right Side / Float) -->
+          <div class="w-full md:w-64 bg-slate-900 border-l border-slate-800 p-4 flex flex-col gap-3 relative shadow-inner overflow-hidden">
+            
+            <!-- Loading overlay simulation -->
+            <div class="absolute inset-0 bg-slate-900 flex flex-col items-center justify-center gap-2.5 z-10 animate-hero-loading">
+              <div class="w-6 h-6 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+              <div class="text-[10px] text-slate-400 font-sans">Analyzing problem...</div>
+            </div>
+
+            <div class="animate-hero-content flex flex-col gap-3 flex-1">
+              <!-- Noxar mini visual card -->
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                  <span class="text-white font-bold text-xs lowercase font-sans">noxar</span>
+                </div>
+                <span class="text-[9px] bg-blue-900/60 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-sans font-bold">⚡ Fast</span>
+              </div>
+
+              <!-- Diagnostics content inside mockup -->
+              <div class="flex-1 flex flex-col gap-2 font-sans overflow-y-auto">
+                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Complexity Audit</div>
+                
+                <!-- Metric rows -->
+                <div class="bg-slate-950 p-2 rounded border border-slate-800 text-[11px]">
+                  <div class="text-slate-400 font-semibold mb-0.5">Big-O Bound:</div>
+                  <div class="text-emerald-400 font-mono">O(N) Time | O(1) Space</div>
+                </div>
+
+                <div class="bg-slate-950 p-2 rounded border border-slate-800 text-[11px] flex-1">
+                  <div class="text-slate-400 font-semibold mb-0.5">Devious Corner Cases:</div>
+                  <div class="text-slate-300 text-[10px] leading-relaxed">
+                    - Empty vectors / <code class="font-mono text-purple-300 bg-slate-900 px-1 rounded">N=0</code><br>
+                    - All elements negative: <code class="font-mono text-purple-300 bg-slate-900 px-1 rounded">nums = [-3, -2, -5]</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -253,11 +359,21 @@
           </div>
 
           <!-- High-Fidelity Clipboard Capture Mockup -->
-          <div class="bg-slate-950/80 rounded-xl overflow-hidden border border-white/10 shadow-inner h-[180px] relative">
-            <img src="leetcode_demo.webp" class="w-full h-full object-cover" alt="noxar clipboard listener demo">
+          <div class="bg-slate-950/80 rounded-xl p-4 border border-white/10 backdrop-blur-sm text-left font-sans text-sm select-none">
+            <div class="flex items-center justify-between text-[11px] text-blue-300 border-b border-white/10 pb-2 mb-2.5">
+              <span class="flex items-center gap-1.5 font-semibold">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+                Clipboard Listener
+              </span>
+            </div>
+            <div class="relative font-mono text-[11px] text-white/80 line-clamp-2 bg-black/30 p-2 rounded border border-white/5 overflow-hidden">
+              Given an array of integers nums and an integer target, return indices of the two numbers such that they add up...
+              <!-- Scanning laser bar -->
+              <div class="absolute top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent shadow-[0_0_8px_#22d3ee] animate-laser-scan"></div>
+            </div>
           </div>
         </div>
-
+ 
         <!-- Right Column: assists you instantly -->
         <div class="reveal bg-slate-50 border border-slate-100 text-slate-800 rounded-2xl p-8 md:p-10 flex flex-col justify-between shadow-sm hover:shadow-md hover:border-slate-200 hover:-translate-y-1 transition-all duration-300 relative">
           <div class="mb-12">
@@ -270,10 +386,26 @@
               Tap <kbd class="bg-slate-200 border border-slate-300 text-slate-700 px-1.5 py-0.5 rounded font-mono text-xs">Ctrl + Space</kbd> and noxar immediately overlays constraints, complexity bounds, and unseen mathematical input configurations on your screen.
             </p>
           </div>
-
+ 
           <!-- High-Fidelity Diagnostics Card Mockup -->
-          <div class="bg-slate-950/80 rounded-xl overflow-hidden border border-slate-200/60 shadow-inner h-[180px] relative">
-            <img src="demo.webp" class="w-full h-full object-cover" alt="noxar assistant diagnostics stream">
+          <div class="bg-white rounded-xl p-4 border border-slate-200/60 shadow-md flex flex-col gap-2.5 text-left font-sans text-sm select-none">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span class="font-bold text-slate-800 text-[12px]">noxar assistant</span>
+              </div>
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold animate-key-flash">Ctrl+Space</span>
+            </div>
+            <div class="flex flex-col gap-1.5 text-[12px] text-slate-600 font-mono animate-diagnostic-slide">
+              <div class="flex justify-between border-b border-slate-100/50 pb-1">
+                <span>Time Complexity:</span>
+                <span class="text-indigo-600 font-semibold">O(N log N)</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Memory Bound:</span>
+                <span class="text-slate-700">O(N) auxiliary</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -625,7 +757,7 @@
           <h3 class="text-2xl md:text-3xl font-serif font-bold mb-2">Diagnostic AI that helps during practice, not after.</h3>
           <p class="text-slate-400 text-sm md:text-base leading-relaxed">Try noxar on your next problem statement today.</p>
         </div>
-        <a href="https://github.com/manojedu26-boop/Noxar/releases/latest/download/noxar-Setup-1.0.0.exe" class="relative z-10 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-full shadow-md transition duration-150 text-[14px]">
+        <a href="https://github.com/manojedu26-boop/Noxar/releases" class="relative z-10 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-full shadow-md transition duration-150 text-[14px]">
           Get for Windows
         </a>
       </div>
@@ -643,7 +775,7 @@
         <!-- Resources -->
         <div class="flex flex-col gap-3 text-left">
           <h5 class="text-slate-500 font-bold text-xs uppercase tracking-wider">Resources</h5>
-          <a href="https://github.com/manojedu26-boop/Noxar/releases/latest/download/noxar-Setup-1.0.0.exe" class="text-slate-650 hover:text-slate-950 text-sm font-medium transition">Desktop Core</a>
+          <a href="https://github.com/manojedu26-boop/Noxar/releases" class="text-slate-650 hover:text-slate-950 text-sm font-medium transition">Desktop Core</a>
           <a href="https://github.com/manojedu26-boop/Noxar" class="text-slate-650 hover:text-slate-950 text-sm font-medium transition">GitHub Repo</a>
         </div>
 
