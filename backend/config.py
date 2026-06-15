@@ -28,7 +28,7 @@ class Settings:
         self.anthropic_api_key = os.environ.get("ANTHROPIC_API_KEY")
         
         # Hyperparameters for mathematical determinism and low latency
-        self.default_temperature = 0.1
+        self.default_temperature = 0.0
         self.fast_model = "gemini-2.5-flash"
         self.reasoning_model = "o3-mini"
         
