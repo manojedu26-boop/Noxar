@@ -24,7 +24,7 @@
     "url": "git+https://github.com/manojedu26-boop/Noxar.git"
   },
   "build": {
-    "appId": "com.noxar.desktop",
+    "appId": "com.noxar.core",
     "productName": "noxar",
     "win": {
       "target": [
@@ -37,9 +37,11 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "noxar"
+      "shortcutName": "noxar",
+      "include": "installer.nsh"
     },
     "directories": {
       "output": "dist-app"

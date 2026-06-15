@@ -3,32 +3,35 @@ const path = require('path');
 
 // Single Instance Lock to prevent duplicate zombie windows
 const gotTheLock = app.requestSingleInstanceLock();
+
 if (!gotTheLock) {
+  // If another instance is already running, kill this one immediately without opening ports
   app.quit();
-  return;
+  process.exit(0);
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, focus our main window instead
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      isCoinState = false;
+      // If minimized or docked as a coin, expand it back to full size and correct position
+      mainWindow.setSize(420, 620);
+      const { screen } = require('electron');
+      const primaryDisplay = screen.getPrimaryDisplay();
+      const { width, height } = primaryDisplay.workAreaSize;
+      mainWindow.setPosition(width - 440, Math.floor((height - 620) / 2));
+      
+      mainWindow.show();
+      mainWindow.focus();
+
+      // Inform the frontend to restore/expand its UI from the coin state
+      mainWindow.webContents.send('window-restore-ui');
+    }
+  });
 }
 
 let mainWindow;
 let isCoinState = false;
-
-app.on('second-instance', (event, commandLine, workingDirectory) => {
-  if (mainWindow) {
-    isCoinState = false;
-    // If minimized or docked as a coin, expand it back to full size and correct position
-    mainWindow.setSize(420, 620);
-    const { screen } = require('electron');
-    const primaryDisplay = screen.getPrimaryDisplay();
-    const { width, height } = primaryDisplay.workAreaSize;
-    mainWindow.setPosition(width - 440, Math.floor((height - 620) / 2));
-    
-    // Bring window to front and focus
-    mainWindow.show();
-    mainWindow.focus();
-
-    // Inform the frontend to restore/expand its UI from the coin state
-    mainWindow.webContents.send('window-restore-ui');
-  }
-});
 
 
 function createWindow() {
