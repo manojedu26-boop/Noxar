@@ -105,8 +105,12 @@ class DiagnosticsService:
                     if chunk.choices and chunk.choices[0].delta.content:
                         yield f"data: {chunk.choices[0].delta.content}\n\n"
             except Exception as e:
+                err_str = str(e)
                 logger.exception("Error during OpenAI reasoning stream generation")
-                yield f"data: [OpenAI Streaming Error: {str(e)}]\n\n"
+                if "rate_limit" in err_str.lower() or "quota" in err_str.lower() or "429" in err_str:
+                    yield "data: **OpenAI API Key Quota Reached.**\n\nPlease switch the model selection at the top to **Fast** mode to continue instantly.\n\n"
+                else:
+                    yield f"data: [OpenAI Streaming Error: {err_str}]\n\n"
                 
         else: # "Fast" or other fallback
             if not settings.gemini_api_key:
@@ -126,5 +130,9 @@ class DiagnosticsService:
                     if chunk.text:
                         yield f"data: {chunk.text}\n\n"
             except Exception as e:
+                err_str = str(e)
                 logger.exception("Error during Gemini stream generation")
-                yield f"data: [Gemini Error: {str(e)}]\n\n"
+                if "resource_exhausted" in err_str.lower() or "quota" in err_str.lower() or "429" in err_str:
+                    yield "data: **Gemini Free Quota Limit Reached.**\n\nPlease switch the model selection at the top to **Reasoning** mode to continue instantly.\n\n"
+                else:
+                    yield f"data: [Gemini Error: {err_str}]\n\n"
